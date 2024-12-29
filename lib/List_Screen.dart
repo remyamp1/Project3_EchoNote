@@ -55,14 +55,53 @@ class _ListScreenState extends State<ListScreen> {
     }
   }
 
-  Future<void> _deleteLisst(String lisstId) async {
+/*  Future<void> _deleteLisst(String lisstId) async {
     try {
       await _appwriteService.deleteTask(lisstId);
       _loadLissts();
     } catch (e) {
       print('Error deleting list:$e');
     }
+  } */
+
+
+Future<void> _deleteLists(String lisstId) async {
+  try {
+    await _appwriteService.deleteLists(lisstId);
+    setState(() {
+      _lists.removeWhere((list) => list.id == lisstId);
+    });
+  } catch (e) {
+    print('Error deleting list: $e');
   }
+}
+
+
+/* void _confirmDelete(String lisstId) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Confirm Delete'),
+      content: Text('Are you sure you want to delete this item?'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context); // Close the dialog
+          },
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context); // Close the dialog
+            _deleteLisst(lisstId);  // Perform deletion
+          },
+          child: Text('Delete'),
+        ),
+      ],
+    ),
+  );
+} */
+
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +145,7 @@ class _ListScreenState extends State<ListScreen> {
                                         if (value == 'Edit') {
                                           _navigateToEditLisst(context, lisst);
                                         } else if (value == 'Delete') {
-                                          _deleteLisst(lisst.id);
+                                          _deleteLists(lisst.id);
                                         }
                                       },
                                       itemBuilder: (context) => [

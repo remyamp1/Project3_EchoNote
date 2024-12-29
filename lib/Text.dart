@@ -18,7 +18,7 @@ class _TextExampleState extends State<TextExample> {
   TextEditingController titlecontroller = TextEditingController();
   TextEditingController contentcontroller = TextEditingController();
 
-  final DateTime dateTime = DateTime.now();
+//  final DateTime dateTime = DateTime.now();
 
   @override
   void initState() {
@@ -29,25 +29,25 @@ class _TextExampleState extends State<TextExample> {
 
   Future<void> _loadtext() async {
     try {
-      final tasks = await _appwriteService.getTasks();
+      final texts = await _appwriteService.getTexts();
       setState(() {
-        _text = tasks.map((e) => Texts.fromDocument(e)).toList();
+        _text = texts.map((e) => Texts.fromDocument(e)).toList();
       });
     } catch (e) {
       print("Title is empty");
     }
   }
 
-  Future<void> _addtext() async {
+  Future<void> _addText() async {
     final Title = titlecontroller.text;
-    final Description = contentcontroller.text;
+    final Content = contentcontroller.text;
 
-    String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-    String time = "${dateTime.hour}/${dateTime.minute}";
+   // String date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+   // String time = "${dateTime.hour}/${dateTime.minute}";
 
-    if (Title.isNotEmpty && Description.isNotEmpty) {
+    if (Title.isNotEmpty && Content.isNotEmpty) {
       try {
-        await _appwriteService.addText(Title, Description, date, time);
+        await _appwriteService.addText(Title, Content);
         titlecontroller.clear();
         contentcontroller.clear();
 
@@ -74,7 +74,7 @@ class _TextExampleState extends State<TextExample> {
                     MaterialPageRoute(builder: (context) => TextScreen()));
               },
               child: IconButton(
-                  onPressed: _addtext,
+                  onPressed: _addText,
                   icon: Icon(
                     Icons.check,
                     color: Colors.white,

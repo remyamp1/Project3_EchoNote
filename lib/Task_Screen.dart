@@ -36,9 +36,30 @@ class _TaskScreenState extends State<TaskScreen> {
     }
   }
 
-  Future<void> _deleteLists(String taskId) async {
+
+  void _navigateToEditTask(BuildContext context, Task tasks)async{
+    final updatedTask=await Navigator.push(context, MaterialPageRoute(
+      builder: (context)=>EditTask(id: tasks.id,
+       Title:tasks.Title, 
+       Description: tasks.Description)));
+
+
+      if(updatedTask !=null){
+        setState(() {
+          final index=_task.indexWhere((text)=>tasks.id==updatedTask.id);
+
+          if(index != -1){
+            _task[index]=updatedTask;
+          }
+        });
+
+        _loadtask();
+      }
+  }
+
+  Future<void> _deletetask(String taskId) async {
     try {
-      await _appwriteService.deleteLists(taskId);
+      await _appwriteService.deleteTask(taskId);
       _loadtask();
     } catch (e) {
       print("Error  deleting task:$e");
@@ -88,17 +109,9 @@ class _TaskScreenState extends State<TaskScreen> {
                                 PopupMenuButton<String>(
                                     onSelected: (value) {
                                       if (value == 'Edit') {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => EditTask(
-                                                      id: tasks.id,
-                                                      Title: tasks.Title,
-                                                      Description:
-                                                          tasks.Description,
-                                                    )));
+                                       _navigateToEditTask(context, tasks);
                                       } else if (value == 'Delete') {
-                                        _deleteLists(tasks.id);
+                                        _deletetask(tasks.id);
                                       }
                                     },
                                     itemBuilder: (context) => [

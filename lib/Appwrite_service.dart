@@ -68,6 +68,25 @@ class AppwriteService {
     }
   }
 
+
+  Future<Document> updateTask(
+    String textId, String Title, String Description,) async {
+  try {
+    final result = await databases.updateDocument(
+      databaseId: databaseId,
+      collectionId: taskcollectionId,
+      data: {'Title': Title, 
+      'Description': Description,
+       },
+      documentId: textId,
+    );
+    return result;
+  } catch (e) {
+    print("Error updating text: $e");
+    throw Exception("Failed to update text");
+  }
+}
+
 // textcollection function
   Future<List<Document>> getTexts() async {
     try {
@@ -83,13 +102,13 @@ class AppwriteService {
   }
 
   Future<Document> addText(
-      String Title, String Content, String Date, String Time) async {
+      String Title, String Content, ) async {
     try {
       final documentId = ID.unique();
       final result = await databases.createDocument(
         databaseId: databaseId,
         collectionId: textcollectionId,
-        data: {'Title': Title, 'Content': Content, 'Date': Date, 'Time': Time},
+        data: {'Title': Title, 'Content': Content,},
         documentId: documentId,
       );
       return result;

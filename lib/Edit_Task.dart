@@ -31,8 +31,32 @@ class _EditTaskState extends State<EditTask> {
   void initState() {
     super.initState();
     _appwriteService = AppwriteService();
-    _task = [];
+  //  _task = [];
+
+  titlecontroller.text=widget.Title;
+  descriptioncontroller.text=widget.Title;
   }
+
+ Future<void> _updateTask()async{
+      final updatedTitle=titlecontroller.text;
+      final updatedDescription=descriptioncontroller.text;
+      if(updatedTitle.isNotEmpty && updatedDescription.isNotEmpty){
+        try {
+        final updatedTask = await _appwriteService.updateTask(
+  widget.id,
+  updatedTitle,
+  updatedDescription,
+);
+          
+      Navigator.pop(context, Texts.fromDocument(updatedTask));
+        } catch (e) {
+          print("Error updated text:$e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("falied  to updata document")));
+        }
+      }
+    }
+
 
   Future<void> _addtask() async {
     final Title = titlecontroller.text;
@@ -63,7 +87,7 @@ class _EditTaskState extends State<EditTask> {
         ),
         actions: [
           IconButton(
-              onPressed: _addtask,
+              onPressed: _updateTask,
               icon: Icon(
                 Icons.check,
                 color: Colors.white,
@@ -86,7 +110,7 @@ class _EditTaskState extends State<EditTask> {
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.green))),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 15),
             TextField(
               controller: descriptioncontroller,
               maxLines: 20,
@@ -101,7 +125,7 @@ class _EditTaskState extends State<EditTask> {
                       borderSide: BorderSide(color: Colors.green))),
             ),
             SizedBox(
-              height: 20,
+              height: 15,
             ),
             Row(
               children: [

@@ -13,8 +13,8 @@ class TextScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TextScreen> {
-    TextEditingController titlecontroller = TextEditingController();
-  TextEditingController contentcontroller = TextEditingController();
+  //  TextEditingController titlecontroller = TextEditingController();
+ // TextEditingController contentcontroller = TextEditingController();
 
   late AppwriteService _appwriteService;
   late List<Texts> _text;
@@ -59,7 +59,7 @@ class _TaskScreenState extends State<TextScreen> {
         _loadtext();
       }
   }
-  Future<void> _deleteText(String textId)async{
+  Future<void> _deletetext(String textId)async{
     try {
      await _appwriteService.deleteText(textId);
      _loadtext();
@@ -105,7 +105,7 @@ class _TaskScreenState extends State<TextScreen> {
                                         _navigateToEditText(context, texts);
                                       } else if (value == 'Delete') {
 
-                                        _deleteText(texts.id);
+                                        _deletetext(texts.id);
                                       }
                                     },
                                     itemBuilder: (context) => [
