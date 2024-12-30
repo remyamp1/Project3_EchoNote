@@ -1,5 +1,5 @@
 import 'package:echo_note/FirstPage.dart';
-import 'package:echo_note/List.dart';
+
 import 'package:flutter/material.dart';
 
 

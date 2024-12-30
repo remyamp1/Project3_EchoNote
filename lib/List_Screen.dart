@@ -1,5 +1,3 @@
-
-
 import 'package:echo_note/Appwrite_Model.dart';
 import 'package:echo_note/Appwrite_service.dart';
 import 'package:echo_note/Edit_List.dart';
@@ -14,7 +12,7 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   late AppwriteService _appwriteService;
   late List<Addlists> _lists;
-
+ // Addlists updateList=Addlists(id: '', Title: '', addlist:[]);
   @override
   void initState() {
     super.initState();
@@ -26,50 +24,45 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _loadLissts() async {
     try {
-      final lissts = await _appwriteService.getLists();
+      final lists = await _appwriteService.getLists();
       setState(() {
-        _lists = lissts.map((e) => Addlists.fromDocument(e)).toList();
+        _lists = lists.map((e) => Addlists.fromDocument(e)).toList();
       });
     } catch (e) {
       print('Error loading lists: $e');
     }
   }
 
-  void _navigateToEditLisst(BuildContext context, Addlists lisst) async {
-    final updatedLisst = await Navigator.push(
+  void _navigateToEditLisst(BuildContext context, Addlists list) async {
+    final updatedList = await Navigator.push(
         context,
       MaterialPageRoute(
             builder: (context) => EditNote(
-                  id: lisst.id,
-                  Title: lisst.Title,
-                  addlist: lisst.addlist,
+                  id: list.id,
+                  Title: list.Title,
+                  addlist: list.addlist,
                 ))); 
 
-    if (updatedLisst != null) {
+    if (updatedList != null) {
       setState(() {
-        final index = _lists.indexWhere((t) => t.id == updatedLisst.id);
+        final index = _lists.indexWhere((t) => t.id == updatedList.id);
         if (index != -1) {
-          _lists[index] = updatedLisst;
+          _lists[index] = updatedList;
         }
       });
+      _loadLissts();
     }
   }
 
-/*  Future<void> _deleteLisst(String lisstId) async {
-    try {
-      await _appwriteService.deleteTask(lisstId);
-      _loadLissts();
-    } catch (e) {
-      print('Error deleting list:$e');
-    }
-  } */
 
 
-Future<void> _deleteLists(String lisstId) async {
+
+Future<void> _deleteLists(String listId) async {
   try {
-    await _appwriteService.deleteLists(lisstId);
-    setState(() {
-      _lists.removeWhere((list) => list.id == lisstId);
+    await _appwriteService.deleteLists(listId);
+    _loadLissts();
+   setState(() {
+      _lists.removeWhere((list) => list.id == listId);
     });
   } catch (e) {
     print('Error deleting list: $e');
@@ -108,76 +101,81 @@ Future<void> _deleteLists(String lisstId) async {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(15),
-        child: /*_lissts.isEmpty
+        child: /*_lists.isEmpty
           ? Center(child: Text("no data"))
-          :*/
-            Column(
-          children: [
-            Expanded(
-              child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 7,
-                      crossAxisSpacing: 7),
-                  itemCount: _lists.length,
-                  itemBuilder: (context, index) {
-                    final lisst = _lists[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: 100,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: const Color.fromARGB(255, 140, 120, 248)),
-                        child: Padding(
+          :*/ Column(
+            children: [
+              Expanded(
+                child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 7,
+                          crossAxisSpacing: 7),
+                      itemCount: _lists.length,
+                      itemBuilder: (context, index) {
+                        final list = _lists[index];
+                        return Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(lisst.Title,
-                                      style: TextStyle(color: Colors.white)),
-                                  Spacer(),
-                                  PopupMenuButton<String>(
-                                      onSelected: (value) {
-                                        if (value == 'Edit') {
-                                          _navigateToEditLisst(context, lisst);
-                                        } else if (value == 'Delete') {
-                                          _deleteLists(lisst.id);
-                                        }
-                                      },
-                                      itemBuilder: (context) => [
-                                            PopupMenuItem(
-                                                value: "Edit",
-                                                child: Text("Edit")),
-                                            PopupMenuItem(
-                                                value: 'Delete',
-                                                child: Text('delete')),
-                                          ]),
-                                ],
+                          child: GestureDetector(
+                            onTap: ()=> _navigateToEditLisst(context,list),
+                            child: Container(
+                              height: 100,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: const Color.fromARGB(255, 140, 120, 248)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(list.Title,
+                                            style: TextStyle(color: Colors.white)),
+                                        Spacer(),
+                                        PopupMenuButton<String>(
+                                            onSelected: (value) {
+                                              if (value == 'Edit') {
+                                                _navigateToEditLisst(context, list);
+                                              } else if (value == 'Delete') {
+                                                _deleteLists(list.id);
+                                              }
+                                            },
+                                            itemBuilder: (context) => [
+                                                  PopupMenuItem(
+                                                      value: "Edit",
+                                                      child: Text("Edit")),
+                                                  PopupMenuItem(
+                                                      value: 'Delete',
+                                                      child: Text('delete')),
+                                                ]),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    
+                                    ...list.addlist
+                                        .map((item) => Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 2.0),
+                                              child: Text(item,
+                                                  style:
+                                                      TextStyle(color: Colors.white)),
+                                            ))
+                                        .toList(),
+                                  ],
+                                ),
                               ),
-                              SizedBox(height: 10),
                               
-                              ...lisst.addlist
-                                  .map((item) => Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 2.0),
-                                        child: Text(item,
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ))
-                                  .toList(),
-                            ],
+                            
+                            ),
+                            
                           ),
-                        ),
-                      ),
-                    );
-                  }),
-            )
-          ],
-        ),
+                        );
+                      }),
+              ),
+            ],
+          ),
       ),
     );
   }

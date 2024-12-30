@@ -174,6 +174,8 @@ Future<Document> updateText(String textId, String Title, String Content) async {
           },
          documentId: documentId,
       );
+
+      
         print('Document added: ${response.$id}');
     } catch (e) {
       print("failed to add item:$e");
@@ -192,4 +194,23 @@ Future<Document> updateText(String textId, String Title, String Content) async {
       rethrow;
     }
   }
+
+
+  Future<Document> updateList(String textId, String Title, List<String> addlist) async {
+  try {
+    final result = await databases.updateDocument(
+      databaseId: databaseId,
+      collectionId: listcollectionId,
+      data: {
+        'Title': Title,
+       'addlist': addlist
+       },
+      documentId: documentId,
+    );
+    return result;
+  } catch (e) {
+    print("Error updating list: $e");
+    throw Exception("Failed to update list");
+  }
+}
 }
