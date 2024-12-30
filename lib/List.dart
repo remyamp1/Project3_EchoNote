@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 
 
 class ListExample extends StatefulWidget {
+  get id => null;
+
   @override
   State<ListExample> createState() => _ListExampleState();
 }
@@ -17,14 +19,15 @@ class _ListExampleState extends State<ListExample> {
   TextEditingController addlistContoller = TextEditingController();
 
   late List<String> add = [];
-
-  void newList() {
-    setState(() {
-      if (addlistContoller.text.isNotEmpty) {
+  
+  get items => null;
+ void newList() { // Place this method here
+    if (addlistContoller.text.isNotEmpty) {
+      setState(() {
         add.add(addlistContoller.text);
         addlistContoller.clear();
-      }
-    });
+      });
+    }
   }
 
   List<Addlists> convertAddToLisst() {
@@ -39,6 +42,14 @@ class _ListExampleState extends State<ListExample> {
     setState(() {
       add.removeAt(index);
     });
+  }
+
+  void saveChanges() {
+    Navigator.pop(context, Addlists(
+      id: widget.id,
+      Title: titleController.text,
+      addlist: items,
+    ));
   }
 
   @override
@@ -153,7 +164,9 @@ class _ListExampleState extends State<ListExample> {
             ),
           ),
           Expanded(
-              child: ListView.builder(
+              child: add.isEmpty
+              ? Center(child: Text(""),)
+              :ListView.builder(
                   itemCount: add.length,
                   itemBuilder: (context, index) {
                     return Container(
@@ -161,6 +174,7 @@ class _ListExampleState extends State<ListExample> {
                       width: 50,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15)),
+                          
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,

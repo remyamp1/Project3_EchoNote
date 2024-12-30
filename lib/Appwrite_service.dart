@@ -196,21 +196,21 @@ Future<Document> updateText(String textId, String Title, String Content) async {
   }
 
 
-  Future<Document> updateList(String textId, String Title, List<String> addlist) async {
+Future<dynamic> updateList(String id, String title, List<String> addlist) async {
   try {
-    final result = await databases.updateDocument(
+    // Assuming `database` and `collectionId` are properly initialized
+    return await databases.updateDocument(
       databaseId: databaseId,
       collectionId: listcollectionId,
+      documentId: id,
       data: {
-        'Title': Title,
-       'addlist': addlist
-       },
-      documentId: documentId,
+        'Title': title,
+        'addlist': addlist,
+      },
     );
-    return result;
   } catch (e) {
-    print("Error updating list: $e");
-    throw Exception("Failed to update list");
+    throw Exception("Failed to update the list: $e");
   }
 }
+
 }
