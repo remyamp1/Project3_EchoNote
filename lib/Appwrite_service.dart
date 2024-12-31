@@ -148,68 +148,68 @@ Future<Document> updateText(String textId, String Title, String Content) async {
   }
 
   // Listcollection function
-  Future<List<Document>> getLists() async {
+
+   Future<List<Document>> getLissts() async {
     try {
-      final response = await databases.listDocuments(
-        databaseId: databaseId,
-        collectionId: listcollectionId,
-      );
-      return response.documents;
+      final result = await databases.listDocuments(
+          databaseId: databaseId, collectionId: listcollectionId);
+      return result.documents;
     } catch (e) {
-      print("Failed to load list:$e");
+      print('Error loading notes:$e');
       rethrow;
     }
   }
-
-  Future<void> addLists(
-      String  Title,List<String> addlist) async {
+ Future<Document> addLisst(String Title, List<String> addlist) async {
     try {
-      final documentId=ID.unique();
+      final documentId = ID.unique();
       final response = await databases.createDocument(
         databaseId: databaseId,
         collectionId: listcollectionId,
         data: {
-          'Title':  Title, 
-          'addlist': addlist,
-          },
-         documentId: documentId,
+          'Title': Title,
+          'addlist': addlist, // Pass the entire list of strings
+        },
+        documentId: documentId,
       );
-
-      
-        print('Document added: ${response.$id}');
+      print('Document created with title: ${response.data['Title']}');
+      print('List data:${response.data['addlist']}');
+      return response;
     } catch (e) {
-      print("failed to add item:$e");
+      print('Error creating list: $e');
       rethrow;
     }
   }
 
-  Future<void> deleteLists(String documentId) async {
-    try {
-      await databases.deleteDocument(
-          databaseId: databaseId,
-          collectionId: listcollectionId,
-          documentId: documentId);
-    } catch (e) {
-      print("error deleting task:$e");
-      rethrow;
-    }
-  }
-
-
-Future<dynamic> updateList(String id, String title, List<String> addlist) async {
+  Future<Document> updateLisst(
+    String lisstId, String Title, List<String> addList) async {
   try {
-    // Assuming `database` and `collectionId` are properly initialized
-    return await databases.updateDocument(
+    final result = await databases.updateDocument(
       databaseId: databaseId,
       collectionId: listcollectionId,
-      documentId: id,
+      documentId: lisstId,
       data: {
-        'Title': title,
-        'addlist': addlist,
+        'Title': Title,
+        'addlist': addList,
       },
     );
+    return result;
   } catch (e) {
-    throw Exception("Failed to update the list: $e");
+    print('Error updating list :$e');
+    rethrow;
+  }
+}
+
+Future<void> deleteLisst(String LisstId) async {
+  try {
+    await databases.deleteDocument(
+      databaseId: databaseId,
+      collectionId: listcollectionId,
+      documentId: LisstId,
+    );
+    print('List deleted successfully');
+  } catch (e) {
+    print('Error deleting list: $e');
+    rethrow;
   }
 }
 

@@ -6,34 +6,31 @@ import 'package:flutter/material.dart';
 
 
 class ListExample extends StatefulWidget {
-  get id => null;
-
   @override
   State<ListExample> createState() => _ListExampleState();
 }
 
 class _ListExampleState extends State<ListExample> {
   late AppwriteService _appwriteService;
-  late List<Addlists> _lists;
+
   TextEditingController titleController = TextEditingController();
   TextEditingController addlistContoller = TextEditingController();
 
   late List<String> add = [];
-  
-  get items => null;
- void newList() { // Place this method here
-    if (addlistContoller.text.isNotEmpty) {
-      setState(() {
+
+  void newList() {
+    setState(() {
+      if (addlistContoller.text.isNotEmpty) {
         add.add(addlistContoller.text);
         addlistContoller.clear();
-      });
-    }
+      }
+    });
   }
 
-  List<Addlists> convertAddToLisst() {
-    List<Addlists> newLisstItems = [];
+  List<Lisst> convertAddToLisst() {
+    List<Lisst> newLisstItems = [];
     for (var item in add) {
-      newLisstItems.add(Addlists(Title: item, id: 'id', addlist: [item]));
+      newLisstItems.add(Lisst(Title: item, id: 'id', addlist: [item]));
     }
     return newLisstItems;
   }
@@ -44,28 +41,17 @@ class _ListExampleState extends State<ListExample> {
     });
   }
 
-  void saveChanges() {
-    Navigator.pop(context, Addlists(
-      id: widget.id,
-      Title: titleController.text,
-      addlist: items,
-    ));
-  }
-
   @override
   void initState() {
     super.initState();
     _appwriteService = AppwriteService();
-    _lists = [];
     _loadLissts();
     // Ensure this is called to load the data when the screen initializes
   }
 
   Future<void> _loadLissts() async {
     try {
-      final lissts = await _appwriteService.getLists();
       setState(() {
-        _lists = lissts.map((e) => Addlists.fromDocument(e)).toList();
       });
     } catch (e) {
       print('Error loading lists: $e');
@@ -74,16 +60,17 @@ class _ListExampleState extends State<ListExample> {
 
   // Other methods...
 
-  Future<void> _addLists() async {
+  Future<void> _addLisst() async {
     final Title = titleController.text;
     final addlist = add;
 
     if (Title.isNotEmpty && addlist.isNotEmpty) {
       try {
-        List<Addlists> newLisstItems = convertAddToLisst();
+        List<Lisst> newLisstItems = convertAddToLisst();
 
+        // ignore: unused_local_variable
         for (var lisstItem in newLisstItems) {
-          await _appwriteService.addLists(Title, addlist);
+          await _appwriteService.addLisst(Title, addlist);
         }
         titleController.clear();
         addlistContoller.clear();
@@ -97,14 +84,6 @@ class _ListExampleState extends State<ListExample> {
     }
   }
 
-  Future<void> _deleteLisst(String lisstId) async {
-    try {
-      await _appwriteService.deleteTask(lisstId);
-      _loadLissts();
-    } catch (e) {
-      print('Error deleting list:$e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,10 +98,10 @@ class _ListExampleState extends State<ListExample> {
           IconButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ListScreen()));
+                    MaterialPageRoute(builder: (context) => Listscreen()));
               },
               icon: IconButton(
-                onPressed: _addLists,
+                onPressed: _addLisst,
                 icon: Icon(
                   Icons.check,
                   color: Colors.white,
@@ -164,9 +143,7 @@ class _ListExampleState extends State<ListExample> {
             ),
           ),
           Expanded(
-              child: add.isEmpty
-              ? Center(child: Text(""),)
-              :ListView.builder(
+              child: ListView.builder(
                   itemCount: add.length,
                   itemBuilder: (context, index) {
                     return Container(
@@ -174,7 +151,6 @@ class _ListExampleState extends State<ListExample> {
                       width: 50,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15)),
-                          
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,

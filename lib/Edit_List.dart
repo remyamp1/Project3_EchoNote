@@ -1,76 +1,57 @@
-
-import 'package:echo_note/Appwrite_Model.dart';
 import 'package:echo_note/Appwrite_service.dart';
 import 'package:flutter/material.dart';
 
 
-class EditNote extends StatefulWidget {
+class Editlist extends StatefulWidget {
   final String id;
   final String Title;
-  final List<String> addlist;
+  final String addlist;
 
-  const EditNote({
-    required this.id,
-    required this.Title,
-    required this.addlist,
-  });
+  Editlist({required this.id, required this.Title, required this.addlist});
 
   @override
-  State<EditNote> createState() => _EditNoteState();
+  _EditlistState createState() => _EditlistState();
 }
 
-class _EditNoteState extends State<EditNote> {
+class _EditlistState extends State<Editlist> {
   late AppwriteService _appwriteService;
   late TextEditingController titleController;
   late TextEditingController addlistController;
-  List<String> addlistItems = [];
+  late List<String> addlistItems;
 
   @override
   void initState() {
     super.initState();
     _appwriteService = AppwriteService();
     titleController = TextEditingController(text: widget.Title);
-    addlistController = TextEditingController();
-    addlistItems = List.from(widget.addlist);
-  }
-
-  @override
-  void dispose() {
-    titleController.dispose();
-    addlistController.dispose();
-    super.dispose();
+    addlistController = TextEditingController(text: widget.addlist);
+    addlistItems = widget.addlist
+        .split(','); // Splitting the addlist string into a list of items
   }
 
   Future<void> _updateList() async {
-    final updatedTitle = titleController.text;
-    if (updatedTitle.isNotEmpty && addlistItems.isNotEmpty) {
-      try {
-        final updatedList = await _appwriteService.updateList(
-          widget.id,
-          updatedTitle,
-          addlistItems,
-        );
-        Navigator.pop(context, Addlists.fromDocument(updatedList));
-      } catch (e) {
-        print("Error updating list: $e");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to update the document")),
-        );
-      }
+    try {
+      await _appwriteService.updateLisst(
+        widget.id,
+        titleController.text,
+        addlistItems,
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      print('Error updating list: $e');
     }
   }
 
-  void _addNewListItem() {
-    final newItem = addlistController.text.trim();
-    if (newItem.isNotEmpty) {
+  void _addItemToAddlist() {
+    if (addlistController.text.isNotEmpty) {
       setState(() {
-        addlistItems.add(newItem);
+        addlistItems.add(addlistController.text);
+        addlistController.clear();
       });
-      addlistController.clear();
     }
   }
 
-  void _removeListItem(int index) {
+  void _removeItem(int index) {
     setState(() {
       addlistItems.removeAt(index);
     });
@@ -81,12 +62,14 @@ class _EditNoteState extends State<EditNote> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: Text("Edit Note"),
+        title: Text('Edit List'),
         actions: [
           IconButton(
-            onPressed: _updateList,
-            icon: Icon(Icons.check, color: Colors.white),
-          ),
+              onPressed: _updateList,
+              icon: Icon(
+                Icons.check,
+                color: Colors.white,
+              ))
         ],
       ),
       body: Padding(
@@ -96,36 +79,21 @@ class _EditNoteState extends State<EditNote> {
             TextField(
               controller: titleController,
               decoration: InputDecoration(
-                label: Text("Title", style: TextStyle(color: Colors.green)),
+                labelText: 'List Title',
                 border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
-                ),
               ),
             ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: addlistController,
-                    decoration: InputDecoration(
-                      label: Text("Add to List", style: TextStyle(color: Colors.green)),
-                      border: OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        onPressed: _addNewListItem,
-                       icon: Icon(Icons.add, color: Colors.green)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    ),
-                  ),
+            SizedBox(height: 10),
+            TextField(
+              controller: addlistController,
+              decoration: InputDecoration(
+                labelText: 'Add List Item',
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: _addItemToAddlist,
                 ),
-              /*  IconButton(
-                  onPressed: _addNewListItem,
-                  icon: Icon(Icons.add, color: Colors.green),
-                ), */
-              ],
+              ),
             ),
             SizedBox(height: 10),
             Expanded(
@@ -135,13 +103,17 @@ class _EditNoteState extends State<EditNote> {
                   return ListTile(
                     title: Text(addlistItems[index]),
                     trailing: IconButton(
-                      onPressed: () => _removeListItem(index),
-                      icon: Icon(Icons.delete, color: Colors.red),
+                      icon: Icon(Icons.delete),
+                      onPressed: () => _removeItem(index),
                     ),
                   );
                 },
               ),
             ),
+            /*ElevatedButton(
+              onPressed: _updateList,
+              child: Text('Save Changes'),
+            ),*/
           ],
         ),
       ),

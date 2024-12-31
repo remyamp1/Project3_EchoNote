@@ -48,24 +48,23 @@ class Texts {
   }
 }
 // List
-class Addlists {
+class Lisst {
   final String id;
-  final String  Title;
-  final List<String> addlist;
+  final String Title;
+  final List<String> addlist;  // Change from String to List<String>
 
-
-  Addlists({
+  Lisst({
     required this.id,
-    required this. Title,
+    required this.Title,
     required this.addlist,
-  
   });
 
-  factory Addlists.fromDocument(Document doc) {
-    return Addlists(
-        id: doc.$id,
-         Title: doc.data[" Title"] ?? '',
-        addlist:List<String>.from(doc.data['addlist'] ?? ''),
-     );
+  factory Lisst.fromDocument(Document doc) {
+    // Ensure the 'addlist' field is a list
+    return Lisst(
+      id: doc.$id,
+      Title: doc.data['Title'],
+      addlist: List<String>.from(doc.data['addlist'] ?? []),  // Convert 'addlist' to List<String>
+    );
   }
 }
