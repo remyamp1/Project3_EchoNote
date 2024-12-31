@@ -34,7 +34,7 @@ class _EditTaskState extends State<EditTask> {
   //  _task = [];
 
   titlecontroller.text=widget.Title;
-  descriptioncontroller.text=widget.Title;
+  descriptioncontroller.text=widget.Description;
   }
 
  Future<void> _updateTask()async{
@@ -113,7 +113,7 @@ class _EditTaskState extends State<EditTask> {
             SizedBox(height: 15),
             TextField(
               controller: descriptioncontroller,
-              maxLines: 20,
+              maxLines: 15,
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   label: Text(
