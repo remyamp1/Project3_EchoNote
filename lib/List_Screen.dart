@@ -88,7 +88,7 @@ Future<void> _deleteLisst(String LisstId) async {
                                             Navigator.push(
                                               context,
                                              MaterialPageRoute(
-                                            builder: (context) =>Editlist(id: lisst.id, Title: lisst.Title, addlist: lisst.addlist.join(',')),
+                                            builder: (context) =>Editlist(id: lisst.id, Title: lisst.Title, addlist: lisst.addlist),
                                          ),
                                         );
 

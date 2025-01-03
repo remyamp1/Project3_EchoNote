@@ -1,11 +1,10 @@
 import 'package:echo_note/Appwrite_service.dart';
 import 'package:flutter/material.dart';
 
-
 class Editlist extends StatefulWidget {
   final String id;
   final String Title;
-  final String addlist;
+  final List<dynamic> addlist;
 
   Editlist({required this.id, required this.Title, required this.addlist});
 
@@ -16,17 +15,30 @@ class Editlist extends StatefulWidget {
 class _EditlistState extends State<Editlist> {
   late AppwriteService _appwriteService;
   late TextEditingController titleController;
-  late TextEditingController addlistController;
+  TextEditingController addlistController = TextEditingController();
   late List<String> addlistItems;
+  int? _editingIndex;
+  late TextEditingController _editController;
 
   @override
   void initState() {
     super.initState();
     _appwriteService = AppwriteService();
     titleController = TextEditingController(text: widget.Title);
-    addlistController = TextEditingController(text: widget.addlist);
-    addlistItems = widget.addlist
-        .split(','); // Splitting the addlist string into a list of items
+    _editController = TextEditingController();
+    addlistItems = List<String>.from(widget.addlist);
+
+    //  addlistController = TextEditingController(text: widget.addlist);
+    //  addlistItems = widget.addlist
+    //    .split(','); // Splitting the addlist string into a list of items
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    addlistController.dispose();
+    _editController.dispose();
+    super.dispose();
   }
 
   Future<void> _updateList() async {
@@ -54,6 +66,23 @@ class _EditlistState extends State<Editlist> {
   void _removeItem(int index) {
     setState(() {
       addlistItems.removeAt(index);
+    });
+  }
+
+  void _startEditing(int index) {
+    setState(() {
+      _editingIndex = index;
+      _editController.text = addlistItems[index];
+    });
+  }
+
+  void _stopEditing() {
+    setState(() {
+      if (_editingIndex != null) {
+        addlistItems[_editingIndex!] = _editController.text;
+        _editingIndex = null;
+        _editController.clear();
+      }
     });
   }
 
@@ -100,20 +129,43 @@ class _EditlistState extends State<Editlist> {
               child: ListView.builder(
                 itemCount: addlistItems.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(addlistItems[index]),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () => _removeItem(index),
-                    ),
-                  );
+                  return _editingIndex == index
+                      ? ListTile(
+                          title: TextField(
+                            controller: _editController,
+                            onSubmitted: (_) => _stopEditing(),
+                            decoration:
+                                InputDecoration(border: OutlineInputBorder()),
+                          ),
+                          trailing: IconButton(
+                              onPressed: _stopEditing,
+                              icon: Icon(
+                                Icons.check,
+                                color: Colors.green,
+                              )),
+                        )
+                      : ListTile(
+                          title: Text(addlistItems[index]),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                  onPressed: () => _startEditing(index),
+                                  icon: Icon(
+                                    Icons.edit,
+                                    color: Colors.red,
+                                  )),
+                              IconButton(
+                                  onPressed: () => _removeItem(index),
+                                  icon: Icon(
+                                    Icons.cancel,
+                                  )),
+                            ],
+                          ),
+                        );
                 },
               ),
             ),
-            /*ElevatedButton(
-              onPressed: _updateList,
-              child: Text('Save Changes'),
-            ),*/
           ],
         ),
       ),
